@@ -4,15 +4,28 @@ A concept prototype for Media.net. When a news story about an entity turns negat
 
 > **Simulated data.** Nothing connects to Media.net, Yahoo/Bing or publisher inventory. SkyJet, the advertisers and the pages are fictional.
 
-## The two-minute story
+## The story the app tells
 
-1. **Before.** Keyword blocking blocks the crash report (Page A) for every advertiser, yet still runs a travel ad beside a month-old SkyJet story (Page B).
-2. **Detect.** A mention spike fires an event at +20 minutes with confidence 0.91.
-3. **Propagate.** Page A now monetises with a beauty ad. Page B drops travel ads for a finance ad. Pages C and D don't change.
-4. **Decay.** After 48 hours the event's weight falls below 0.25 and Page B goes back to travel demand.
-5. **Monetise.** Over the first 48 hours: $6,216 vs $4,104 revenue, RPM $3.60 vs $2.38, 384,000 impressions protected, 960,000 recovered.
+The app opens on a five-chapter story card. Each chapter sets up the screen and highlights the panel to look at.
 
-Use **Guided demo** in the app to step through it.
+1. **The problem.** Keyword blocking gets breaking news wrong twice. It **over-blocks**: the crash report (Page A) contains "crash", so no advertiser can run there, and 20,000 impressions an hour go unsold. It also **under-blocks**: a month-old "SkyJet launches new Bali route" story (Page B) has no blocked words, so a travel ad runs beside the airline while it's in the news.
+2. **Detect.** SkyJet mentions jump from about 2 to 64 per 10 minutes, 82% negative. An event fires at +20 minutes with confidence 0.91 for travel, airline and insurance advertisers.
+3. **Propagate.** With the Live Event Layer on, Page A is **recovered** (Glow Shampoo runs), Page B is **protected** (Nimbus Bank replaces FlyAway), and Pages C and D are **unchanged**.
+4. **Decay.** The event's weight halves every 24 hours. After 48 hours it drops below 0.25 and Page B shows FlyAway again.
+5. **Results.** Over the first 48 hours: $6,216 vs $4,104 revenue (+51%), RPM $3.60 vs $2.38, 960,000 impressions recovered, 384,000 protected.
+
+Select **Hide story and explore** to use every control freely, or **Play the story** in the header to start again.
+
+## What's new compared with keyword blocking
+
+| | Keyword blocking today | Live Event Layer |
+| --- | --- | --- |
+| Trigger | A blocked word is on the page | A news event about an entity is detected |
+| Pages affected | Every page with the word | Only pages where the entity is central (salience ≥ 0.5) |
+| Advertisers affected | All of them | Only sensitive verticals (travel, airline, insurance) |
+| Duration | As long as the word is there | Fades out over 48 hours (24-hour half-life) |
+
+On screen, every page card shows its outcome. In keyword mode it shows what goes wrong (over-blocked, risky placement). In Live Event Layer mode it shows what changed versus today (recovered, protected, unchanged).
 
 ## Run locally
 
@@ -44,14 +57,14 @@ src/
   engine.ts            Decision logic as pure functions: detect, weight, propagate, runAuction, buildReport
   checks.ts            PRD acceptance tests, shared by Vitest and the in-app "acceptance tests" panel
   engine.test.ts       Vitest suite
-  App.tsx              State, derived values and the guided demo
+  App.tsx              State, derived values and story chapters
   components/
-    Header.tsx         Mode toggle, clock timeline (drag along the event's decay curve), guided demo button
+    Header.tsx         Approach toggle, clock timeline (drag along the event's decay curve), story button
     DetectPanel.tsx    Mention velocity chart, spike trigger, polarity, event status
     PropagatePanel.tsx Page cards and the page × advertiser grid
     MonetisePanel.tsx  Both-mode comparison, protected/recovered, revenue per hour, deal summary
     Drawers.tsx        Detail panels: decision log, bid request, detector log, revenue by page, deal, tests, about
-    Tour.tsx           Guided demo bar
+    Story.tsx          Five-chapter story card shown on first load
     ui.tsx             Small shared components
   styles.css           Design tokens and styles (Media.net purple, pink reserved for the event)
 ```

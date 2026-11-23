@@ -194,3 +194,25 @@ export function holdReason(row: DecisionRow, adv: Advertiser): 'event' | 'tier' 
   if (row.eligible) return null;
   return row.stepDown && row.baseTier >= adv.minTier ? 'event' : 'tier';
 }
+
+/* Story helpers: how a page's outcome differs between the two modes -------- */
+
+export type Outcome = 'recovered' | 'protected' | 'unchanged' | 'changed';
+export type KeywordIssue = 'over-blocked' | 'risky' | null;
+
+/** Live Event Layer result compared with keyword blocking on the same page and hour. */
+export function compareOutcome(page: Page, keyword: AuctionResult, lel: AuctionResult, events: EventRecord[]): Outcome {
+  const k = keyword.winner?.id ?? null, l = lel.winner?.id ?? null;
+  if (k === l) return 'unchanged';
+  if (!keyword.winner && lel.winner) return 'recovered';
+  const affected = new Set(events.map(e => e.vertical));
+  if (keyword.winner && affected.has(keyword.winner.vertical) && salienceOf(page, ENTITY_ID) >= SALIENCE_MIN) return 'protected';
+  return 'changed';
+}
+
+/** What keyword blocking gets wrong on this page right now. */
+export function keywordIssue(page: Page, keyword: AuctionResult, hours: number): KeywordIssue {
+  if (keyword.blockedKeyword) return 'over-blocked';
+  if (isRiskyPlacement(page, keyword.winner, hours, 'keyword')) return 'risky';
+  return null;
+}

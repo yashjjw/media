@@ -50,7 +50,7 @@ export function MonetisePanel({ report, mode, clock, events, hourly, highlighted
 }) {
   if (!report) {
     return (
-      <Panel id="monetise" step={3} title="Monetise" question="What did the publisher protect and earn?" highlighted={highlighted}>
+      <Panel id="monetise" title="Monetise: measure the result" lede="What each approach earns on the same pages and bids, over the first 48 hours of the event." highlighted={highlighted}>
         <div className="empty-state">
           <strong>Nothing to compare yet</strong>
           <p>Trigger the news spike with the crash story. The report then compares both modes over the first 48 hours of the event.</p>
@@ -72,7 +72,7 @@ export function MonetisePanel({ report, mode, clock, events, hourly, highlighted
   );
 
   return (
-    <Panel id="monetise" step={3} title="Monetise" question="What did the publisher protect and earn?" highlighted={highlighted}>
+    <Panel id="monetise" title="Monetise: measure the result" lede="What each approach earns on the same pages and bids, over the first 48 hours of the event." highlighted={highlighted}>
       <p className="section-label">First 48 hours of the event, simulated</p>
       <div className="compare">
         {block('keyword', 'Keyword blocking')}

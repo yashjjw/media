@@ -112,7 +112,7 @@ export function DetectPanel({ detection, neg, onNeg, playing, played, onSpike, c
   }
 
   return (
-    <Panel id="detect" step={1} title="Detect" question="Is a story about SkyJet turning negative?" highlighted={highlighted}>
+    <Panel id="detect" title="Detect: spot the event" lede="We count SkyJet mentions every 10 minutes. A sudden spike of mostly negative coverage counts as an event." highlighted={highlighted}>
       <VelocityChart detection={detection} />
       <div className="control-row">
         <button type="button" className="btn btn-primary" onClick={onSpike} disabled={playing}>
