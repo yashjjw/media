@@ -73,23 +73,25 @@ export function MonetisePanel({ report, mode, clock, events, hourly, highlighted
 
   return (
     <Panel id="monetise" title="Monetise: measure the result" lede="What each approach earns on the same pages and bids, over the first 48 hours of the event." highlighted={highlighted}>
-      <p className="section-label">First 48 hours of the event, simulated</p>
-      <div className="compare">
-        {block('keyword', 'Keyword blocking')}
-        {block('lel', 'Live Event Layer')}
-      </div>
-      <p className="compare-delta"><strong>{signed(diff, money)}</strong> revenue ({signed(diff / report.keyword.revenue * 100, v => v.toFixed(0))}%) with the Live Event Layer</p>
-
-      <div className="stat-pair">
-        <div><span className="stat-value">{num(report.protectedImpressions)}</span><span className="stat-label">impressions protected from risky placements</span></div>
-        <div><span className="stat-value">{num(report.recoveredImpressions)}</span><span className="stat-label">impressions recovered that keyword blocking left empty</span></div>
+      <div className="tour-anchor stack" data-tour="results">
+        <p className="section-label">First 48 hours of the event, simulated</p>
+        <div className="compare">
+          {block('keyword', 'Keyword blocking')}
+          {block('lel', 'Live Event Layer')}
+        </div>
+        <p className="compare-delta"><strong>{signed(diff, money)}</strong> revenue ({signed(diff / report.keyword.revenue * 100, v => v.toFixed(0))}%) with the Live Event Layer</p>
+  
+        <div className="stat-pair">
+          <div><span className="stat-value">{num(report.protectedImpressions)}</span><span className="stat-label">impressions protected from risky placements</span></div>
+          <div><span className="stat-value">{num(report.recoveredImpressions)}</span><span className="stat-label">impressions recovered that keyword blocking left empty</span></div>
+        </div>
       </div>
 
       <p className="section-label">Revenue per hour</p>
       <RevenueChart data={hourly} clock={clock} />
       <div className="panel-foot"><LinkButton onClick={onRevenue}>Revenue by page and definitions</LinkButton></div>
 
-      <div className="deal">
+      <div className="deal" data-tour="deal">
         <div className="deal-head">
           <strong>Breaking-safe News deal</strong>
           <Chip tone={active ? 'event' : 'neutral'}>{active ? 'Live' : 'Ended'}</Chip>

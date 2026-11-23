@@ -31,7 +31,7 @@ function PageCard({ pa, mode, clock, events, onOpen }: {
   if (mode === 'lel' && outcome === 'protected') note = `${pa.keyword.winner?.name} is held back while SkyJet is in the news.`;
 
   return (
-    <button type="button" className={`page-card${mode === 'keyword' && issue ? ` is-${issue}` : ''}`} onClick={onOpen}
+    <button type="button" className={`page-card${mode === 'keyword' && issue ? ` is-${issue}` : ''}`} onClick={onOpen} data-tour={`page-${page.id}`}
       aria-label={`Page ${page.id}: ${page.title}. Open decision log`}>
       <span className="page-id">{page.id}</span>
       <span className="page-main">

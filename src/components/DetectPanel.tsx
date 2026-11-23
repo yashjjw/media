@@ -79,7 +79,7 @@ export function DetectPanel({ detection, neg, onNeg, playing, played, onSpike, c
   if (detection.fired && ev) {
     const active = w >= ev.minWeight;
     status = (
-      <div className="event-card">
+      <div className="event-card" data-tour="event">
         <div className="event-card-head">
           <span className="pulse" aria-hidden="true" />
           <strong>Event fired at +{ev.startMinute} min</strong>
@@ -108,19 +108,21 @@ export function DetectPanel({ detection, neg, onNeg, playing, played, onSpike, c
       </div>
     );
   } else {
-    status = <div className="status-card"><strong>Watching SkyJet.</strong> Mentions are at the 7-day baseline.</div>;
+    status = <div className="status-card" data-tour="event"><strong>Watching SkyJet.</strong> Mentions are at the 7-day baseline.</div>;
   }
 
   return (
     <Panel id="detect" title="Detect: spot the event" lede="We count SkyJet mentions every 10 minutes. A sudden spike of mostly negative coverage counts as an event." highlighted={highlighted}>
-      <VelocityChart detection={detection} />
-      <div className="control-row">
-        <button type="button" className="btn btn-primary" onClick={onSpike} disabled={playing}>
-          {playing ? 'Playing…' : played ? 'Replay news spike' : 'Trigger news spike'}
-        </button>
-        <Segmented size="sm" label="Story polarity" value={presetValue}
-          onChange={v => { if (v === 'crash') onNeg(presets.crash); if (v === 'positive') onNeg(presets.positiveStory); }}
-          options={[{ value: 'crash', label: 'Crash story' }, { value: 'positive', label: 'Positive story' }]} />
+      <div className="tour-anchor" data-tour="spike">
+        <VelocityChart detection={detection} />
+        <div className="control-row">
+          <button type="button" className="btn btn-primary" onClick={onSpike} disabled={playing}>
+            {playing ? 'Playing…' : played ? 'Replay news spike' : 'Trigger news spike'}
+          </button>
+          <Segmented size="sm" label="Story polarity" value={presetValue}
+            onChange={v => { if (v === 'crash') onNeg(presets.crash); if (v === 'positive') onNeg(presets.positiveStory); }}
+            options={[{ value: 'crash', label: 'Crash story' }, { value: 'positive', label: 'Positive story' }]} />
+        </div>
       </div>
       <div className="fine-tune">
         <button type="button" className="link-button subtle" aria-expanded={fineTune} onClick={() => setFineTune(f => !f)}>
