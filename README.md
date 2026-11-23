@@ -6,7 +6,7 @@ A concept prototype for Media.net. When a news story about an entity turns negat
 
 ## The story the app tells
 
-The story is kept separate from the prototype. The app opens with a guide card that docks beside the dashboard (a bottom sheet on phones). Each chapter sets up the screen, points at the panel to look at and fades the rest. Close it and the dashboard is all that's left.
+The app has two views, switched in the header. **Story** opens first: five scenes, one idea each. The left side has a short headline and a sentence or two. The right side has only the live piece of the prototype that proves it, such as two mock news pages with their ad slot, the mention chart, a before/after table, the decay curve with a play button, or the results. **Prototype** is the full dashboard with every control, with no narration on top. Use ← and → to move between scenes.
 
 1. **The problem.** Keyword blocking gets breaking news wrong twice. It **over-blocks**: the crash report (Page A) contains "crash", so no advertiser can run there, and 20,000 impressions an hour go unsold. It also **under-blocks**: a month-old "SkyJet launches new Bali route" story (Page B) has no blocked words, so a travel ad runs beside the airline while it's in the news.
 2. **Detect.** SkyJet mentions jump from about 2 to 64 per 10 minutes, 82% negative. An event fires at +20 minutes with confidence 0.91 for travel, airline and insurance advertisers.
@@ -14,7 +14,7 @@ The story is kept separate from the prototype. The app opens with a guide card t
 4. **Decay.** The event's weight halves every 24 hours. After 48 hours it drops below 0.25 and Page B shows FlyAway again.
 5. **Results.** Over the first 48 hours: $6,216 vs $4,104 revenue (+51%), RPM $3.60 vs $2.38, 960,000 impressions recovered, 384,000 protected.
 
-Close the guide (✕ or **Explore on your own**) to use every control freely, and select **Play the story** in the header to start again.
+The last scene ends with **Open the prototype**.
 
 ## What's new compared with keyword blocking
 
@@ -57,14 +57,14 @@ src/
   engine.ts            Decision logic as pure functions: detect, weight, propagate, runAuction, buildReport
   checks.ts            PRD acceptance tests, shared by Vitest and the in-app "acceptance tests" panel
   engine.test.ts       Vitest suite
-  App.tsx              State, derived values and story chapters
+  App.tsx              State, derived values, views and story scenes
   components/
-    Header.tsx         Approach toggle, clock timeline (drag along the event's decay curve), story button
+    Header.tsx         Story/Prototype tabs; in Prototype, the approach toggle and clock timeline
     DetectPanel.tsx    Mention velocity chart, spike trigger, polarity, event status
     PropagatePanel.tsx Page cards and the page × advertiser grid
     MonetisePanel.tsx  Both-mode comparison, protected/recovered, revenue per hour, deal summary
     Drawers.tsx        Detail panels: decision log, bid request, detector log, revenue by page, deal, tests, about
-    Story.tsx          Five-chapter guide card that docks beside the panel it explains
+    StoryView.tsx      Story view: five scenes, each pairing a headline with one live piece of the prototype
     ui.tsx             Small shared components
   styles.css           Design tokens and styles (Media.net purple, pink reserved for the event)
 ```

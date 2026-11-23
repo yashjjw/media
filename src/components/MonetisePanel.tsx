@@ -18,7 +18,7 @@ function HourTooltip({ active, payload }: { active?: boolean; payload?: { payloa
   );
 }
 
-function RevenueChart({ data, clock }: { data: HourPoint[]; clock: number }) {
+export function RevenueChart({ data, clock }: { data: HourPoint[]; clock: number }) {
   const tick = { fontSize: 11, fill: '#696670' };
   return (
     <div className="chart" role="img" aria-label="Revenue per hour for both modes over 96 hours">

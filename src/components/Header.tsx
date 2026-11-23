@@ -7,7 +7,7 @@ const curveY = (w: number) => 30 - w * 26;
 const points = (from: number, to: number) =>
   Array.from({ length: to - from + 1 }, (_, i) => from + i).map(t => `${t},${curveY(weight(t))}`).join(' ');
 
-function Timeline({ clock, onChange, fired }: { clock: number; onChange: (h: number) => void; fired: boolean }) {
+export function Timeline({ clock, onChange, fired }: { clock: number; onChange: (h: number) => void; fired: boolean }) {
   const min = SEED.eventTemplate.minWeight;
   const w = weight(clock);
   const status = !fired ? 'no event yet' : w >= min ? `weight ${w.toFixed(2)}, active` : `weight ${w.toFixed(2)}, ended`;
@@ -45,9 +45,11 @@ function Timeline({ clock, onChange, fired }: { clock: number; onChange: (h: num
   );
 }
 
-export function Header({ mode, onMode, clock, onClock, fired, onStory, storyOpen, highlightClock, highlightMode }: {
-  mode: Mode; onMode: (m: Mode) => void; clock: number; onClock: (h: number) => void;
-  fired: boolean; onStory: () => void; storyOpen: boolean; highlightClock: boolean; highlightMode: boolean;
+export type View = 'story' | 'prototype';
+
+export function Header({ view, onView, mode, onMode, clock, onClock, fired }: {
+  view: View; onView: (v: View) => void; mode: Mode; onMode: (m: Mode) => void;
+  clock: number; onClock: (h: number) => void; fired: boolean;
 }) {
   return (
     <header className="app-header">
@@ -59,15 +61,25 @@ export function Header({ mode, onMode, clock, onClock, fired, onStory, storyOpen
             <p>Concept prototype for Media.net</p>
           </div>
         </div>
-        <div className={`mode-wrap${highlightMode ? ' is-highlighted' : ''}`}>
-          <span className="control-label" id="mode-label">Decide ads using</span>
-          <Segmented label="Decide ads using" value={mode} onChange={onMode}
-            options={[{ value: 'keyword', label: 'Keyword blocking today' }, { value: 'lel', label: 'Live Event Layer' }]} />
-        </div>
-        <div className={`timeline-wrap${highlightClock ? ' is-highlighted' : ''}`}>
-          <Timeline clock={clock} onChange={onClock} fired={fired} />
-        </div>
-        <button type="button" className={`btn ${storyOpen ? '' : 'btn-primary'}`} onClick={onStory}>{storyOpen ? 'Restart story' : 'Play the story'}</button>
+        <nav className="view-tabs" aria-label="View">
+          {(['story', 'prototype'] as View[]).map(v => (
+            <button key={v} type="button" className={view === v ? 'is-on' : ''} aria-current={view === v ? 'page' : undefined} onClick={() => onView(v)}>
+              {v === 'story' ? 'Story' : 'Prototype'}
+            </button>
+          ))}
+        </nav>
+        {view === 'prototype' && (
+          <>
+            <div className="mode-wrap">
+              <span className="control-label">Decide ads using</span>
+              <Segmented label="Decide ads using" value={mode} onChange={onMode}
+                options={[{ value: 'keyword', label: 'Keyword blocking today' }, { value: 'lel', label: 'Live Event Layer' }]} />
+            </div>
+            <div className="timeline-wrap">
+              <Timeline clock={clock} onChange={onClock} fired={fired} />
+            </div>
+          </>
+        )}
       </div>
     </header>
   );

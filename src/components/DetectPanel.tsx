@@ -18,7 +18,7 @@ function VelocityTooltip({ active, payload }: { active?: boolean; payload?: { pa
   );
 }
 
-function VelocityChart({ detection }: { detection: Detection }) {
+export function VelocityChart({ detection }: { detection: Detection }) {
   const byMinute = new Map(detection.evals.map(e => [e.minute, e]));
   const data: Point[] = SEED.spikeSeries.map(b => {
     const e = byMinute.get(b.minute);
