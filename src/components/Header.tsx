@@ -45,9 +45,8 @@ function Timeline({ clock, onChange, fired }: { clock: number; onChange: (h: num
   );
 }
 
-export function Header({ mode, onMode, clock, onClock, fired, onStory, storyOpen, highlightClock, highlightMode }: {
-  mode: Mode; onMode: (m: Mode) => void; clock: number; onClock: (h: number) => void;
-  fired: boolean; onStory: () => void; storyOpen: boolean; highlightClock: boolean; highlightMode: boolean;
+export function Header({ mode, onMode, clock, onClock, fired, onTour }: {
+  mode: Mode; onMode: (m: Mode) => void; clock: number; onClock: (h: number) => void; fired: boolean; onTour: () => void;
 }) {
   return (
     <header className="app-header">
@@ -59,15 +58,15 @@ export function Header({ mode, onMode, clock, onClock, fired, onStory, storyOpen
             <p>Concept prototype for Media.net</p>
           </div>
         </div>
-        <div className={`mode-wrap${highlightMode ? ' is-highlighted' : ''}`}>
-          <span className="control-label" id="mode-label">Decide ads using</span>
+        <div className="mode-wrap" data-tour="mode">
+          <span className="control-label">Decide ads using</span>
           <Segmented label="Decide ads using" value={mode} onChange={onMode}
             options={[{ value: 'keyword', label: 'Keyword blocking today' }, { value: 'lel', label: 'Live Event Layer' }]} />
         </div>
-        <div className={`timeline-wrap${highlightClock ? ' is-highlighted' : ''}`}>
+        <div className="timeline-wrap" data-tour="clock">
           <Timeline clock={clock} onChange={onClock} fired={fired} />
         </div>
-        <button type="button" className={`btn ${storyOpen ? '' : 'btn-primary'}`} onClick={onStory}>{storyOpen ? 'Restart story' : 'Play the story'}</button>
+        <button type="button" className="btn" onClick={onTour}>Take the tour</button>
       </div>
     </header>
   );
