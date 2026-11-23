@@ -6,13 +6,13 @@ import { DetectPanel } from './components/DetectPanel';
 import { PropagatePanel, type PageAuction } from './components/PropagatePanel';
 import { MonetisePanel, type HourPoint } from './components/MonetisePanel';
 import { AboutDrawer, ChecksDrawer, DealDrawer, EventDrawer, PageDrawer, RevenueDrawer, useChecks, type DrawerState } from './components/Drawers';
-import { Tour, type TourStep } from './components/Tour';
+import { Story, type Chapter } from './components/Story';
 
 const HISTORY_END = SEED.spikeSeries.findIndex(b => b.minute === 0); // buckets up to the incident are already observed
 const LAST = SEED.spikeSeries.length - 1;
 const STEP_MS = 250;
 
-type Zone = 'detect' | 'propagate' | 'monetise' | 'clock';
+type Zone = 'detect' | 'propagate' | 'monetise' | 'clock' | 'mode';
 
 export default function App() {
   const [mode, setMode] = useState<Mode>('keyword');
@@ -22,7 +22,6 @@ export default function App() {
   const [playing, setPlaying] = useState(false);
   const [drawer, setDrawer] = useState<DrawerState>(null);
   const [view, setView] = useState<'pages' | 'grid'>('pages');
-  const [tour, setTour] = useState(0);
 
   // Spike playback: one bucket every STEP_MS.
   useEffect(() => {
@@ -56,53 +55,60 @@ export default function App() {
 
   const openPage = useCallback((pageId: PageId) => setDrawer({ kind: 'page', pageId, tab: 'log' }), []);
 
-  /* Guided demo (PRD demo script, five steps) */
-  const steps: (TourStep & { zones: Zone[]; enter: () => void })[] = useMemo(() => [
-    { title: 'Before', zones: ['propagate'],
-      caption: 'Keyword blocking today. The crash report (A) is blocked for every advertiser, yet a FlyAway travel ad still runs beside the month-old SkyJet route story (B).',
+  /* Story mode: the PRD demo script as five chapters, shown on first load. */
+  const chapters: (Chapter & { zones: Zone[]; enter: () => void })[] = useMemo(() => [
+    { id: 1, label: 'The problem', zones: ['propagate'],
       enter: () => { resetSpike(); setNeg(SEED.polarityPresets.crash); setMode('keyword'); setClock(1); setView('pages'); setDrawer(null); } },
-    { title: 'Detect', zones: ['detect'],
-      caption: 'The spike plays one 10-minute bucket at a time. At +10 min there are 18 mentions, below the volume gate of 20. At +20 min all four conditions pass and the event fires with confidence 0.91.',
+    { id: 2, label: 'Detect', zones: ['detect'],
       enter: () => { setNeg(SEED.polarityPresets.crash); setMode('keyword'); setClock(1); setDrawer(null); playSpike(); } },
-    { title: 'Propagate', zones: ['propagate'],
-      caption: 'With the Live Event Layer on, A serves Glow Shampoo and B serves Nimbus Bank. C and D don’t change. Page C’s log shows why: salience 0.12 is below 0.5, so no step-down.',
-      enter: () => { finishSpike(); setMode('lel'); setClock(1); setView('pages'); setDrawer({ kind: 'page', pageId: 'C', tab: 'log' }); } },
-    { title: 'Decay', zones: ['clock', 'propagate'],
-      caption: 'At +60h the event weight is 0.18, below 0.25. The step-down ends and Page B goes back to FlyAway.',
-      enter: () => { finishSpike(); setMode('lel'); setClock(60); setView('pages'); setDrawer(null); } },
-    { title: 'Monetise', zones: ['monetise'],
-      caption: 'Over the first 48 hours the layer earns $6,216 against $4,104, protects 384,000 impressions and recovers 960,000. The clock is back at +1h, so the Breaking-safe News deal is live.',
-      enter: () => { finishSpike(); setMode('lel'); setClock(1); setDrawer(null); } },
+    { id: 3, label: 'Propagate', zones: ['mode', 'propagate'],
+      enter: () => { finishSpike(); setNeg(SEED.polarityPresets.crash); setMode('lel'); setClock(1); setView('pages'); setDrawer(null); } },
+    { id: 4, label: 'Decay', zones: ['clock', 'propagate'],
+      enter: () => { finishSpike(); setNeg(SEED.polarityPresets.crash); setMode('lel'); setClock(60); setView('pages'); setDrawer(null); } },
+    { id: 5, label: 'Results', zones: ['monetise'],
+      enter: () => { finishSpike(); setNeg(SEED.polarityPresets.crash); setMode('lel'); setClock(1); setDrawer(null); } },
   ], [finishSpike, playSpike, resetSpike]);
 
-  const goStep = useCallback((i: number) => {
-    setTour(i);
-    steps[i - 1].enter();
-    const zone = steps[i - 1].zones[steps[i - 1].zones.length - 1];
-    requestAnimationFrame(() => document.getElementById(zone === 'clock' ? 'root' : zone)?.scrollIntoView({ block: 'start', behavior: 'smooth' }));
-  }, [steps]);
-  const exitTour = useCallback(() => setTour(0), []);
-  const hl = (z: Zone) => tour > 0 && steps[tour - 1].zones.includes(z);
+  const [chapter, setChapter] = useState(1); // 0 = story hidden, exploring freely
+  const goChapter = useCallback((i: number) => {
+    if (i < 1 || i > chapters.length) return;
+    setChapter(i);
+    chapters[i - 1].enter();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [chapters]);
+  const hl = (z: Zone) => chapter > 0 && chapters[chapter - 1].zones.includes(z);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return;
-      if (drawer) setDrawer(null); else if (tour) setTour(0);
+      if (drawer) setDrawer(null);
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [drawer, tour]);
+  }, [drawer]);
 
   const passed = checks.filter(c => c.pass).length;
 
   return (
-    <div className={`app${tour ? ' is-touring' : ''}${drawer ? ' has-drawer' : ''}`}>
+    <div className={`app${drawer ? ' has-drawer' : ''}`}>
       <div className="sim-banner" id="sim-banner" role="note">
         <strong>Simulated data.</strong> Not connected to Media.net, Yahoo/Bing or publisher inventory.
       </div>
 
       <Header mode={mode} onMode={setMode} clock={clock} onClock={setClock} fired={detection.fired}
-        onDemo={() => goStep(1)} highlightClock={hl('clock')} />
+        onStory={() => goChapter(1)} storyOpen={chapter > 0} highlightClock={hl('clock')} highlightMode={hl('mode')} />
+
+      <div className="story-wrap">
+        {chapter > 0 ? (
+          <Story chapters={chapters} current={chapter} onGo={goChapter} onClose={() => setChapter(0)}
+            data={{ detection, auctions, report, clock, playing }} />
+        ) : (
+          <div className="story-collapsed">
+            <span>Exploring freely. Change the approach, the clock or the story, and every panel recomputes.</span>
+            <button type="button" className="link-button" onClick={() => goChapter(1)}>Replay the story ›</button>
+          </div>
+        )}
+      </div>
 
       <main className="story">
         <DetectPanel detection={detection} neg={neg} onNeg={setNeg} playing={playing} played={played}
@@ -131,10 +137,6 @@ export default function App() {
       {drawer?.kind === 'checks' && <ChecksDrawer onClose={() => setDrawer(null)} />}
       {drawer?.kind === 'about' && <AboutDrawer onClose={() => setDrawer(null)} />}
 
-      {tour > 0 && (
-        <Tour steps={steps} index={tour} onBack={() => tour > 1 && goStep(tour - 1)}
-          onNext={() => (tour >= steps.length ? exitTour() : goStep(tour + 1))} onExit={exitTour} />
-      )}
     </div>
   );
 }

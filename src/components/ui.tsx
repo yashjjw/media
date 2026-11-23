@@ -1,24 +1,41 @@
 import type { ReactNode } from 'react';
+import type { KeywordIssue, Outcome } from '../engine';
+
+export type Tone = 'neutral' | 'ok' | 'no' | 'warn' | 'event' | 'brand';
 
 export function TierBadge({ tier }: { tier: number }) {
   return <span className={`tier tier-${tier}`} title={`Suitability tier ${tier} (1 high risk, 4 fully safe)`}>{tier}</span>;
 }
 
-export function Chip({ tone = 'neutral', children }: { tone?: 'neutral' | 'ok' | 'no' | 'event' | 'brand'; children: ReactNode }) {
+export function Chip({ tone = 'neutral', children }: { tone?: Tone; children: ReactNode }) {
   return <span className={`chip chip-${tone}`}>{children}</span>;
 }
 
-export function Panel({ id, step, title, question, highlighted, children }: {
-  id: string; step: number; title: string; question: string; highlighted: boolean; children: ReactNode;
+const OUTCOME: Record<Outcome, [Tone, string]> = {
+  recovered: ['ok', 'Recovered'],
+  protected: ['brand', 'Protected'],
+  unchanged: ['neutral', 'Unchanged'],
+  changed: ['neutral', 'Changed'],
+};
+export function OutcomeChip({ outcome }: { outcome: Outcome }) {
+  const [tone, label] = OUTCOME[outcome];
+  return <Chip tone={tone}>{label}</Chip>;
+}
+
+export function IssueChip({ issue }: { issue: KeywordIssue }) {
+  if (issue === 'over-blocked') return <Chip tone="warn">Over-blocked</Chip>;
+  if (issue === 'risky') return <Chip tone="no">Risky placement</Chip>;
+  return <Chip>No issue</Chip>;
+}
+
+export function Panel({ id, title, lede, highlighted, children }: {
+  id: string; title: string; lede: string; highlighted: boolean; children: ReactNode;
 }) {
   return (
     <section id={id} className={`panel${highlighted ? ' is-highlighted' : ''}`} aria-labelledby={`${id}-title`}>
       <header className="panel-head">
-        <span className="step" aria-hidden="true">{step}</span>
-        <div>
-          <h2 id={`${id}-title`}>{title}</h2>
-          <p>{question}</p>
-        </div>
+        <h2 id={`${id}-title`}>{title}</h2>
+        <p>{lede}</p>
       </header>
       <div className="panel-body">{children}</div>
     </section>

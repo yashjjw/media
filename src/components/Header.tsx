@@ -14,8 +14,8 @@ function Timeline({ clock, onChange, fired }: { clock: number; onChange: (h: num
   return (
     <div className="timeline">
       <div className="timeline-head">
-        <label htmlFor="clock">Hours since the event</label>
-        <span><strong>+{clock}h</strong> · {status}</span>
+        <label htmlFor="clock" className="control-label">Clock: hours since the event started</label>
+        <span><strong>+{clock}h</strong>, {status}</span>
       </div>
       <div className="timeline-track">
         <svg viewBox={`0 0 ${MAX_H} 32`} preserveAspectRatio="none" aria-hidden="true">
@@ -45,9 +45,9 @@ function Timeline({ clock, onChange, fired }: { clock: number; onChange: (h: num
   );
 }
 
-export function Header({ mode, onMode, clock, onClock, fired, onDemo, highlightClock }: {
+export function Header({ mode, onMode, clock, onClock, fired, onStory, storyOpen, highlightClock, highlightMode }: {
   mode: Mode; onMode: (m: Mode) => void; clock: number; onClock: (h: number) => void;
-  fired: boolean; onDemo: () => void; highlightClock: boolean;
+  fired: boolean; onStory: () => void; storyOpen: boolean; highlightClock: boolean; highlightMode: boolean;
 }) {
   return (
     <header className="app-header">
@@ -59,12 +59,15 @@ export function Header({ mode, onMode, clock, onClock, fired, onDemo, highlightC
             <p>Concept prototype for Media.net</p>
           </div>
         </div>
-        <Segmented label="Decisioning mode" value={mode} onChange={onMode}
-          options={[{ value: 'keyword', label: 'Keyword blocking today' }, { value: 'lel', label: 'Live Event Layer' }]} />
+        <div className={`mode-wrap${highlightMode ? ' is-highlighted' : ''}`}>
+          <span className="control-label" id="mode-label">Decide ads using</span>
+          <Segmented label="Decide ads using" value={mode} onChange={onMode}
+            options={[{ value: 'keyword', label: 'Keyword blocking today' }, { value: 'lel', label: 'Live Event Layer' }]} />
+        </div>
         <div className={`timeline-wrap${highlightClock ? ' is-highlighted' : ''}`}>
           <Timeline clock={clock} onChange={onClock} fired={fired} />
         </div>
-        <button type="button" className="btn btn-primary" onClick={onDemo}>Guided demo</button>
+        <button type="button" className={`btn ${storyOpen ? '' : 'btn-primary'}`} onClick={onStory}>{storyOpen ? 'Restart story' : 'Play the story'}</button>
       </div>
     </header>
   );
