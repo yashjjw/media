@@ -57,15 +57,15 @@ export default function App() {
 
   /* Story mode: the PRD demo script as five chapters, shown on first load. */
   const chapters: (Chapter & { zones: Zone[]; enter: () => void })[] = useMemo(() => [
-    { id: 1, label: 'The problem', zones: ['propagate'],
+    { id: 1, label: 'Problem', slot: 'monetise', point: 'left', look: 'Propagate panel', zones: ['propagate'],
       enter: () => { resetSpike(); setNeg(SEED.polarityPresets.crash); setMode('keyword'); setClock(1); setView('pages'); setDrawer(null); } },
-    { id: 2, label: 'Detect', zones: ['detect'],
+    { id: 2, label: 'Detect', slot: 'propagate', point: 'left', look: 'Detect panel', zones: ['detect'],
       enter: () => { setNeg(SEED.polarityPresets.crash); setMode('keyword'); setClock(1); setDrawer(null); playSpike(); } },
-    { id: 3, label: 'Propagate', zones: ['mode', 'propagate'],
+    { id: 3, label: 'Propagate', slot: 'monetise', point: 'left', look: 'Propagate panel', zones: ['mode', 'propagate'],
       enter: () => { finishSpike(); setNeg(SEED.polarityPresets.crash); setMode('lel'); setClock(1); setView('pages'); setDrawer(null); } },
-    { id: 4, label: 'Decay', zones: ['clock', 'propagate'],
+    { id: 4, label: 'Decay', slot: 'monetise', point: 'left', look: 'Clock and Propagate panel', zones: ['clock', 'propagate'],
       enter: () => { finishSpike(); setNeg(SEED.polarityPresets.crash); setMode('lel'); setClock(60); setView('pages'); setDrawer(null); } },
-    { id: 5, label: 'Results', zones: ['monetise'],
+    { id: 5, label: 'Results', slot: 'propagate', point: 'right', look: 'Monetise panel', zones: ['monetise'],
       enter: () => { finishSpike(); setNeg(SEED.polarityPresets.crash); setMode('lel'); setClock(1); setDrawer(null); } },
   ], [finishSpike, playSpike, resetSpike]);
 
@@ -74,7 +74,13 @@ export default function App() {
     if (i < 1 || i > chapters.length) return;
     setChapter(i);
     chapters[i - 1].enter();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const zones = chapters[i - 1].zones;
+    const target = zones[zones.length - 1];
+    requestAnimationFrame(() => {
+      // Side-by-side layout: every panel starts at the top. Stacked layout: bring the panel into view above the sheet.
+      if (window.innerWidth >= 1180) window.scrollTo({ top: 0, behavior: 'smooth' });
+      else document.getElementById(target)?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    });
   }, [chapters]);
   const hl = (z: Zone) => chapter > 0 && chapters[chapter - 1].zones.includes(z);
 
@@ -90,7 +96,7 @@ export default function App() {
   const passed = checks.filter(c => c.pass).length;
 
   return (
-    <div className={`app${drawer ? ' has-drawer' : ''}`}>
+    <div className={`app${drawer ? ' has-drawer' : ''}${chapter ? ' story-on' : ''}`}>
       <div className="sim-banner" id="sim-banner" role="note">
         <strong>Simulated data.</strong> Not connected to Media.net, Yahoo/Bing or publisher inventory.
       </div>
@@ -98,19 +104,7 @@ export default function App() {
       <Header mode={mode} onMode={setMode} clock={clock} onClock={setClock} fired={detection.fired}
         onStory={() => goChapter(1)} storyOpen={chapter > 0} highlightClock={hl('clock')} highlightMode={hl('mode')} />
 
-      <div className="story-wrap">
-        {chapter > 0 ? (
-          <Story chapters={chapters} current={chapter} onGo={goChapter} onClose={() => setChapter(0)}
-            data={{ detection, auctions, report, clock, playing }} />
-        ) : (
-          <div className="story-collapsed">
-            <span>Exploring freely. Change the approach, the clock or the story, and every panel recomputes.</span>
-            <button type="button" className="link-button" onClick={() => goChapter(1)}>Replay the story ›</button>
-          </div>
-        )}
-      </div>
-
-      <main className="story">
+      <main className="board">
         <DetectPanel detection={detection} neg={neg} onNeg={setNeg} playing={playing} played={played}
           onSpike={playSpike} clock={clock} highlighted={hl('detect')} onDetails={() => setDrawer({ kind: 'event' })} />
         <PropagatePanel auctions={auctions} mode={mode} clock={clock} events={detection.events}
@@ -126,6 +120,11 @@ export default function App() {
         </button>
         <button type="button" className="footer-link" onClick={() => setDrawer({ kind: 'about' })}>What’s real and what’s simulated</button>
       </footer>
+
+      {chapter > 0 && (
+        <Story chapters={chapters} current={chapter} onGo={goChapter} onClose={() => setChapter(0)}
+          data={{ detection, auctions, report, clock, playing }} />
+      )}
 
       {drawer?.kind === 'page' && (
         <PageDrawer pageId={drawer.pageId} tab={drawer.tab} onTab={tab => setDrawer({ ...drawer, tab })}
