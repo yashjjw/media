@@ -1,0 +1,242 @@
+{
+  "entity": {
+    "id": "skyjet",
+    "name": "SkyJet"
+  },
+  "keywordBlocklist": [
+    "crash",
+    "dead",
+    "killed",
+    "accident"
+  ],
+  "pages": [
+    {
+      "id": "A",
+      "title": "SkyJet flight crashes on approach to Denpasar",
+      "publishedHoursBeforeEvent": 0,
+      "baseTier": 2,
+      "entities": [
+        {
+          "entityId": "skyjet",
+          "salience": 0.92
+        }
+      ],
+      "keywords": [
+        "crash",
+        "dead"
+      ],
+      "impressionsPerHour": 20000
+    },
+    {
+      "id": "B",
+      "title": "SkyJet launches new Bali route",
+      "publishedHoursBeforeEvent": 720,
+      "baseTier": 3,
+      "entities": [
+        {
+          "entityId": "skyjet",
+          "salience": 0.85
+        }
+      ],
+      "keywords": [],
+      "impressionsPerHour": 8000
+    },
+    {
+      "id": "C",
+      "title": "10 best Bali beaches for 2027",
+      "publishedHoursBeforeEvent": 2160,
+      "baseTier": 4,
+      "entities": [
+        {
+          "entityId": "skyjet",
+          "salience": 0.12
+        }
+      ],
+      "keywords": [],
+      "impressionsPerHour": 5000
+    },
+    {
+      "id": "D",
+      "title": "15-minute coconut curry",
+      "publishedHoursBeforeEvent": 48,
+      "baseTier": 4,
+      "entities": [],
+      "keywords": [],
+      "impressionsPerHour": 3000
+    }
+  ],
+  "advertisers": [
+    {
+      "id": "flyaway",
+      "name": "FlyAway Holidays",
+      "vertical": "travel",
+      "minTier": 3,
+      "bidCpm": 6,
+      "relevance": {
+        "A": 0.9,
+        "B": 1,
+        "C": 1,
+        "D": 0.2
+      }
+    },
+    {
+      "id": "bluesky",
+      "name": "BlueSky Airways",
+      "vertical": "airlines",
+      "minTier": 3,
+      "bidCpm": 5.5,
+      "relevance": {
+        "A": 0.9,
+        "B": 1,
+        "C": 0.8,
+        "D": 0.2
+      }
+    },
+    {
+      "id": "safetrip",
+      "name": "SafeTrip Insurance",
+      "vertical": "travel_insurance",
+      "minTier": 3,
+      "bidCpm": 4.5,
+      "relevance": {
+        "A": 0.8,
+        "B": 0.9,
+        "C": 0.7,
+        "D": 0.2
+      }
+    },
+    {
+      "id": "glow",
+      "name": "Glow Shampoo",
+      "vertical": "beauty",
+      "minTier": 2,
+      "bidCpm": 3,
+      "relevance": {
+        "A": 0.6,
+        "B": 0.6,
+        "C": 0.6,
+        "D": 0.6
+      }
+    },
+    {
+      "id": "quickbite",
+      "name": "QuickBite",
+      "vertical": "food_delivery",
+      "minTier": 2,
+      "bidCpm": 2.5,
+      "relevance": {
+        "A": 0.5,
+        "B": 0.5,
+        "C": 0.5,
+        "D": 1
+      }
+    },
+    {
+      "id": "nimbus",
+      "name": "Nimbus Bank",
+      "vertical": "finance",
+      "minTier": 3,
+      "bidCpm": 4,
+      "relevance": {
+        "A": 0.5,
+        "B": 0.5,
+        "C": 0.5,
+        "D": 0.5
+      }
+    }
+  ],
+  "eventTemplate": {
+    "riskClass": "high",
+    "verticals": [
+      "travel",
+      "airlines",
+      "travel_insurance"
+    ],
+    "halfLifeHours": 24,
+    "minWeight": 0.25
+  },
+  "mentionsBaselinePer10Min": 2,
+  "spikeSeries": [
+    {
+      "minute": -60,
+      "mentions": 2
+    },
+    {
+      "minute": -50,
+      "mentions": 3
+    },
+    {
+      "minute": -40,
+      "mentions": 2
+    },
+    {
+      "minute": -30,
+      "mentions": 2
+    },
+    {
+      "minute": -20,
+      "mentions": 1
+    },
+    {
+      "minute": -10,
+      "mentions": 2
+    },
+    {
+      "minute": 0,
+      "mentions": 3
+    },
+    {
+      "minute": 10,
+      "mentions": 18
+    },
+    {
+      "minute": 20,
+      "mentions": 64
+    },
+    {
+      "minute": 30,
+      "mentions": 120
+    },
+    {
+      "minute": 40,
+      "mentions": 150
+    },
+    {
+      "minute": 50,
+      "mentions": 140
+    },
+    {
+      "minute": 60,
+      "mentions": 110
+    },
+    {
+      "minute": 70,
+      "mentions": 90
+    },
+    {
+      "minute": 80,
+      "mentions": 70
+    },
+    {
+      "minute": 90,
+      "mentions": 60
+    },
+    {
+      "minute": 100,
+      "mentions": 50
+    },
+    {
+      "minute": 110,
+      "mentions": 45
+    },
+    {
+      "minute": 120,
+      "mentions": 40
+    }
+  ],
+  "polarityPresets": {
+    "crash": 0.82,
+    "positiveStory": 0.15
+  },
+  "reportWindowHours": 48
+}
